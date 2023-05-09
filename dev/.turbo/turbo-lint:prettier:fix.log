@@ -1,0 +1,5 @@
+
+> @glimdown/dev@0.0.0 lint:prettier:fix /home/nullvoxpopuli/Development/NullVoxPopuli/glimdown/dev
+> pnpm -w exec lint prettier:fix
+
+@glimdown/dev :: within dev

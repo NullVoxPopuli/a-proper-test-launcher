@@ -1,0 +1,5 @@
+
+> @glimdown/dev@0.0.0 lint:js:fix /home/nullvoxpopuli/Development/NullVoxPopuli/glimdown/dev
+> pnpm -w exec lint js:fix
+
+@glimdown/dev :: within dev
