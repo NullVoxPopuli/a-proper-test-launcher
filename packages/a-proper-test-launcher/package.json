@@ -4,5 +4,8 @@
   "type": "module",
   "volta": {
     "extends": "../../package.json"
+  },
+  "dependencies": {
+    "open": "^9.1.0"
   }
 }

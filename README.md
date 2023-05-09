@@ -20,6 +20,12 @@ No need to download copies of browsers or drivers for browsers, like puppeteer o
 
 ### Custom
 
+## Supported browsers
+
+Anything installed on your system. 
+
+Cross-platform aliases provided by [`open`](https://www.npmjs.com/package/open)
+
 ## Supported servers / bundlers
 
 All of them.
