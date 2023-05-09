@@ -1,5 +1,7 @@
-"use strict";
+// .eslintrc.js
+'use strict';
 
-const { configs } = require("@nullvoxpopuli/eslint-configs");
+const { configs } = require('@nullvoxpopuli/eslint-configs');
 
-module.exports = configs.crossPlatform();
+// accommodates: JS, TS, ESM, and CJS
+module.exports = configs.node();

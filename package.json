@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "dev": "node ./dev/index.js",
     "release": "changeset publish",
     "test": "turbo run test --output-logs errors-only",
     "lint:fix": "turbo run _:lint:fix --output-logs errors-only",
@@ -13,7 +14,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
-    "@glimdown/dev": "workspace:*",
+    "dev-tools": "workspace:*",
     "concurrently": "^8.0.1",
     "turbo": "1.9.3"
   },
@@ -24,7 +25,7 @@
   },
   "volta": {
     "node": "18.16.0",
-    "pnpm": "8.2.0"
+    "pnpm": "8.4.0"
   },
   "pnpm": {
     "patchedDependencies": {
