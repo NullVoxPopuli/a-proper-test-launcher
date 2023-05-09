@@ -1,4 +1,4 @@
-type Config =
+type Config = (
   | {
       launch: () => Promise<{
         host: string;
@@ -8,4 +8,12 @@ type Config =
     }
   | {
       path: string;
-    };
+    }
+) & {
+  browsers: Record<
+    'chrome' | 'firefox' | 'edge' | string,
+    {
+      args: string[];
+    }
+  >;
+};

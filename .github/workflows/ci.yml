@@ -1,0 +1,102 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+##############################################################
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  TURBO_API: 'http://127.0.0.1:9080'
+  TURBO_TOKEN: 'not-a-secret'
+  TURBO_TEAM: 'foo'
+
+##############################################################
+
+jobs:
+
+  install_dependencies:
+    name: Setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: TurboRepo local server
+      uses: felixmosh/turborepo-gh-artifacts@v2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: wyvox/action@v1 
+
+##############################################################
+
+  lints:
+    name: "Lints"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [install_dependencies]
+
+    steps:
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: wyvox/action@v1 
+      - run: pnpm lint
+
+  tests:
+    name: "Tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [install_dependencies]
+    strategy:
+      matrix:
+        pair:
+        - { browser: 'chrome', scenario: 'test-packages/qunit' }
+        - { browser: 'firefox', scenario: 'test-packages/qunit' }
+        - { browser: 'edge', scenario: 'test-packages/qunit' }
+
+    steps:
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: wyvox/action@v1 
+      - run: BROWSER="${{ matrix.pair.browser }} pnpm turbo run test --filter ${{ matrix.pair.scenario }}
+
+
+  # https://github.com/changesets/action
+  release:
+    name: Release
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+    needs:
+      - tests
+
+    steps:
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: wyvox/action@v1 
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm release
+          title: "Release Preview"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
