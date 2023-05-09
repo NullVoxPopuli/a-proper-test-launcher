@@ -1,8 +1,8 @@
-import path from "node:path";
+import path from 'node:path';
 
-import { packageJson, project } from "ember-apply";
-import fse from "fs-extra";
-import latestVersion from "latest-version";
+import { packageJson, project } from 'ember-apply';
+import fse from 'fs-extra';
+import latestVersion from 'latest-version';
 
 let root = await project.gitRoot();
 
@@ -39,35 +39,35 @@ async function lastestOfAll(dependencies) {
 for await (let workspace of await project.getWorkspaces()) {
   if (workspace === root) continue;
 
-  await packageJson.removeDevDependencies(["eslint-plugin-prettier"]);
+  await packageJson.removeDevDependencies(['eslint-plugin-prettier']);
 
   await packageJson.addDevDependencies(
     await lastestOfAll([
-      "@babel/core",
-      "@babel/eslint-parser",
-      "@nullvoxpopuli/eslint-configs",
-      "@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser",
-      "eslint",
-      "prettier",
-      "typescript",
+      '@babel/core',
+      '@babel/eslint-parser',
+      '@nullvoxpopuli/eslint-configs',
+      '@typescript-eslint/eslint-plugin',
+      '@typescript-eslint/parser',
+      'eslint',
+      'prettier',
+      'typescript',
     ]),
     workspace
   );
 
   await packageJson.addScripts(
     {
-      lint: "pnpm -w exec lint",
-      "lint:fix": "pnpm -w exec lint fix",
-      "_:lint:js": "pnpm -w exec lint js",
-      "_:lint:js:fix": "pnpm -w exec lint js:fix",
-      "_:lint:prettier:fix": "pnpm -w exec lint prettier:fix",
-      "_:lint:prettier": "pnpm -w exec lint prettier",
+      lint: 'pnpm -w exec lint',
+      'lint:fix': 'pnpm -w exec lint fix',
+      '_:lint:js': 'pnpm -w exec lint js',
+      '_:lint:js:fix': 'pnpm -w exec lint js:fix',
+      '_:lint:prettier:fix': 'pnpm -w exec lint prettier:fix',
+      '_:lint:prettier': 'pnpm -w exec lint prettier',
     },
     workspace
   );
 
-  let configPath = path.join(workspace, ".eslintrc.cjs");
+  let configPath = path.join(workspace, '.eslintrc.cjs');
   let hasConfig = await fse.pathExists(configPath);
 
   if (!hasConfig) {

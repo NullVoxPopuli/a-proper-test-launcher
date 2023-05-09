@@ -1,5 +1,3 @@
 import { defineConfig } from 'a-proper-test-launcher';
 
-export default defineConfig({
-
-});
+export default defineConfig({});
