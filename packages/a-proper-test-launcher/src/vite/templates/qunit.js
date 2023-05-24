@@ -4,8 +4,6 @@ import 'qunit/qunit/qunit.css';
 
 import QUnit from 'qunit/qunit/qunit.js';
 
-import { progress } from 'a-proper-test-launcher/browser';
-
 QUnit.config.autostart = false;
 
 const testFiles = await import.meta.glob('@root/tests/**/*-test.{js,ts,mjs,mts}');

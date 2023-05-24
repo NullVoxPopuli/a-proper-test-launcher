@@ -1,13 +1,13 @@
 'use strict';
 
 const DEFAULT_BROWSER = 'Firefox';
-const CI_BROWSER = process.env.CI_BROWSER || DEFAULT_BROWSER;
+const BROWSER = process.env.BROWSER || DEFAULT_BROWSER;
 
 module.exports = {
   test_page: '/?hidepassed',
   framework: "qunit",
   disable_watching: true,
-  launch_in_ci: [CI_BROWSER],
+  launch_in_ci: [BROWSER],
   launch_in_dev: [DEFAULT_BROWSER],
   browser_start_timeout: 120,
   browser_args: {
