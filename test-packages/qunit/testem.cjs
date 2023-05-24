@@ -8,8 +8,8 @@ module.exports = {
   framework: "qunit",
   disable_watching: true,
   launch_in_ci: [BROWSER],
-  launch_in_dev: [DEFAULT_BROWSER],
-  browser_start_timeout: 120,
+  launch_in_dev: [BROWSER],
+  browser_start_timeout: 30,
   browser_args: {
     Firefox: {
       mode: 'ci',

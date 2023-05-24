@@ -16,10 +16,10 @@ const MJS_EXT = ['.js', '.mjs'];
 const isCI = process.env['CI'];
 
 /**
-  * 1. Start Vite with the proxy to Testem enabled
-  * 2. Start Testem with a known port that vite will proxy to
-  *
-  *
+ * 1. Start Vite with the proxy to Testem enabled
+ * 2. Start Testem with a known port that vite will proxy to
+ *
+ *
  * @param {object} [ runtimeConfig ]
  */
 export async function launch(runtimeConfig = {}) {
@@ -31,29 +31,35 @@ export async function launch(runtimeConfig = {}) {
 
   running.printUrls();
 
+  // https://github.com/testem/testem/blob/master/lib/api.js#L10
   testem.setDefaultOptions({
     config_dir: CWD,
+    fail_on_zero_tests: true,
+    // test_page: `localhost:${info.port}`,
   });
 
-  return new Promise((resolve, reject) => {
-    testem.startCI({
-      host: 'localhost',
-      port: info.port,
-      file: path.join(CWD, 'testem.cjs'),
-    },
-      /**
-      * @param {number} exitCode
-      * @param {string} error
-      */
-      (exitCode, error) => {
-       if (error) {
+  if (isCI) {
+    return new Promise((resolve, reject) => {
+      testem.startCI(
+        {
+          file: path.join(CWD, 'testem.cjs'),
+        },
+        /**
+         * @param {number} exitCode
+         * @param {string} error
+         */
+        (exitCode, error) => {
+          if (error) {
             reject(error);
           } else if (exitCode !== 0) {
             reject('Testem finished with non-zero exit code. Tests failed.');
           } else {
             resolve(exitCode);
           }
-    })
-  });
+        }
+      );
+    });
+  } else {
+    testem.startServer();
+  }
 }
-

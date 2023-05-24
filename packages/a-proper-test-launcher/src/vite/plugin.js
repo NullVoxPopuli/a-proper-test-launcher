@@ -58,15 +58,15 @@ export function aProperTestLauncher(options = {}) {
           injectTo: 'head',
           attrs: {
             type: 'module',
-            src: 'a-proper-test-launcher'
-          }
+            src: 'a-proper-test-launcher',
+          },
         },
         {
           tag: 'script',
           injectTo: 'head',
           attrs: {
-            src: 'testem.js'
-          }
+            src: 'testem.js',
+          },
         },
       ];
     },
@@ -92,10 +92,9 @@ export function aProperTestLauncher(options = {}) {
         let name = id.replace('aptl:', '');
 
         if (name.startsWith('/testem')) {
-
           let content = '';
           let testemPath = getTestemDirectory();
-          
+
           content += await fs.readFile(path.join(testemPath, 'public/testem/decycle.js'));
           content += await fs.readFile(path.join(testemPath, 'public/testem/jasmine2_adapter.js'));
           content += await fs.readFile(path.join(testemPath, 'public/testem/jasmine_adapter.js'));
@@ -136,22 +135,21 @@ function getSocketIODirectory() {
   assert(socketManifestPath, 'Something went wrong resolving `socket.io`');
 
   return path.dirname(socketManifestPath);
-
 }
 
 /**
-  *
+ *
  * @param {import('vite').ViteDevServer} server
-  */
+ */
 function setupTestem(server) {
   server.middlewares.use(async (req, res, next) => {
     if (req.url === '/testem/connection.html') {
       let realLocation = path.join(getTestemDirectory(), 'public/testem/connection.html');
       let file = await fs.readFile(realLocation);
 
-      res.setHeader('Content-Type', 'text/html' + '; charset=utf-8')
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'))
-      res.end(file, 'utf8')
+      res.setHeader('Content-Type', 'text/html' + '; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
+      res.end(file, 'utf8');
     }
 
     // For refreshing when the build changes..
@@ -159,18 +157,18 @@ function setupTestem(server) {
       let realLocation = path.join(getSocketIODirectory(), 'client-dist/socket.io.js');
       let file = await fs.readFile(realLocation);
 
-      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8')
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'))
-      res.end(file, 'utf8')
+      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
+      res.end(file, 'utf8');
     }
 
     if (req.url === '/testem/testem_connection.js') {
       let realLocation = path.join(getTestemDirectory(), 'public/testem/testem_connection.js');
       let file = await fs.readFile(realLocation);
 
-      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8')
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'))
-      res.end(file, 'utf8')
+      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
+      res.end(file, 'utf8');
     }
 
     next();
