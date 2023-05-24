@@ -69,49 +69,4 @@ document.body.append(qunitDiv, qunitFixtureDiv);
   });
 })();
 
-QUnit.begin((data) => {
-  progress.report('start', {
-    suites: data.modules.length,
-    tests: data.totalTests,
-  });
-});
-QUnit.done((data) => {
-  progress.report('finish', {
-    duration: data.runtime,
-    passingAssertions: data.passed,
-    failingAssertions: data.failed,
-  });
-});
-QUnit.moduleStart((data) => {
-  progress.report('suite:start', {
-    suiteName: data.name,
-  });
-});
-QUnit.moduleDone((data) => {
-  progress.report('suite:finish', {
-    suiteName: data.name,
-    passingAssertions: data.passed,
-    failingAssertions: data.failed,
-    duration: data.runtime,
-  });
-});
-QUnit.testStart((data) => {
-  progress.report('test:start', {
-    suiteName: data.module,
-    name: data.name,
-  });
-});
-
-QUnit.testDone((data) => {
-  progress.report('test:finish', {
-    suiteName: data.module,
-    name: data.name,
-    duration: data.runtime,
-    isSkipped: data.skipped,
-    isTodo: data.todo,
-    passingAssertions: data.passed,
-    failingAssertions: data.failed,
-  });
-});
-
 QUnit.start();
