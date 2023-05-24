@@ -10,7 +10,6 @@
     "./vite": "./src/vite/index.js",
     "./browser": "./src/browser/index.js"
   },
-  "module": "src/index.js",
   "typesVersions": {
     ">=5": {
       "*": [
