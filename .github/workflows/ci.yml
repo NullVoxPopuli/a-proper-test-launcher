@@ -67,7 +67,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: wyvox/action@v1 
-      - run: BROWSER="${{ matrix.pair.browser }} pnpm turbo run test --filter ${{ matrix.pair.scenario }}
+      - run: BROWSER=${{ matrix.pair.browser }} pnpm turbo run test --filter ${{ matrix.pair.scenario }}
 
 
   # https://github.com/changesets/action
