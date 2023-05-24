@@ -1,7 +1,0 @@
-
-> dev-tools@ lint:prettier /home/nullvoxpopuli/Development/NullVoxPopuli/a-proper-test-launcher/dev
-> pnpm -w exec lint prettier
-
-dev-tools :: within dev
-Checking formatting...
- ELIFECYCLE  Command failed.
