@@ -3,6 +3,7 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
+import proxy from 'express-http-proxy';
 import fse from 'fs-extra';
 import Testem from 'testem';
 import { createServer } from 'vite';
@@ -35,7 +36,14 @@ export async function launch(runtimeConfig = {}) {
   testem.setDefaultOptions({
     config_dir: CWD,
     fail_on_zero_tests: true,
-    // test_page: `localhost:${info.port}`,
+    test_page: `index.html`,
+    // https://github.com/testem/testem/blob/master/lib/server/index.js#L214
+    proxies: {},
+    middleware: [
+      function proxyToBuildHost(app) {
+        app.use('/index.html', proxy(`localhost:${info.port}`)); 
+      }
+    ]
   });
 
   if (isCI) {
