@@ -55,6 +55,27 @@ export function aProperTestLauncher(options = {}) {
       handleProgress(server.ws);
     },
 
+    transformIndexHtml() {
+      return [
+        {
+          tag: 'script',
+          injectTo: 'head',
+          attrs: {
+            type: 'module',
+            src: 'a-proper-test-launcher'
+          }
+        },
+        {
+          tag: 'script',
+          injectTo: 'head',
+          attrs: {
+            type: 'module',
+            src: 'testem.js'
+          }
+        },
+      ];
+    },
+
     resolveId(id) {
       if (id.startsWith('/a-proper-test-launcher')) {
         return `aptl:${id}`;

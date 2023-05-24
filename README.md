@@ -34,10 +34,9 @@ export default defineConfig({
 });
 ```
 
-and then in the index.html:
-```html 
-<script type="module" src="a-proper-test-launcher"></script>
-```
+This will be disabled by default, so you can have it in your main `vite` config.
+
+When invoking `a-proper-test-launcher` via the CLI, it will enable, and change the html at `/` to be the test UI.
 
 ## Supported test frameworks
 
