@@ -39,6 +39,7 @@ interface Payloads {
   };
   'suite:finish': {
     suiteName: string;
+    duration: number;
   };
   'test:start': {
     suiteName: string;
@@ -51,7 +52,8 @@ interface Payloads {
 
     passingAssertions: number;
     failingAssertions: number;
-    isSkipped: number;
+    isSkipped: boolean;
+    isTodo: boolean;
   };
 }
 

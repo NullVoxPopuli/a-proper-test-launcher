@@ -7,6 +7,8 @@
 
 import { NAME } from '../shared.js';
 
+// TODO: use a TAP Reporter
+
 /**
  * @param {WebSocketServer} ws
  */

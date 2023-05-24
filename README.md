@@ -22,7 +22,7 @@ pnpm add <tbd>
 ```ts 
 // vite.config.js
 import { defineConfig } from 'vite';
-import { aPropertTestLauncher } from 'tbd';
+import { aProperTestLauncher } from 'a-proper-test-launcher/vite';
 
 
 export default defineConfig({
@@ -34,17 +34,16 @@ export default defineConfig({
 });
 ```
 
-### Existing Server
-
-```ts 
-tbd
+and then in the index.html:
+```html 
+<script type="module" src="a-proper-test-launcher"></script>
 ```
 
 ## Supported test frameworks
 
 ### QUnit
 
-This is set up automatically via `using: 'qunit'`
+This is set up automatically via `using: 'qunit'` (which is default)
 
 ### Custom
 
@@ -55,7 +54,7 @@ In the vite config:
 ```ts 
 // vite.config.js
 import { defineConfig } from 'vite';
-import { aPropertTestLauncher } from 'tbd';
+import { aProperTestLauncher } from 'a-proper-test-launcher/vite';
 
 
 export default defineConfig({
@@ -131,10 +130,15 @@ Browser launching is implemented with the `@dev/test-runner` browser launcher AP
 
 All of them.
 
+
+
+When used standalone:
+
 This tool has two modes:
  1. point at an existing host / port 
  2. serve static files and go-to 1.
 
+When using the vite plugin, host/port mapping is automatic. The vite plugin is what launches the browsers. 
 
 ## Tech-related questions
 
