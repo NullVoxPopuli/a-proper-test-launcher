@@ -12,6 +12,8 @@
   },
   "typesVersions": {
     ">=5": {
+      "vite": ["./dist/vite/index.d.ts"],
+      "browser": ["./dist/browser/index.d.ts"],
       "*": [
         "./dist/*"
       ]

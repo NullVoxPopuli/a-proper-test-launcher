@@ -10,7 +10,7 @@ import fse from 'fs-extra';
  * @typedef {import('@web/test-runner-core').BrowserLauncher} BrowserLauncher
  */
 
-  /** @type {Record<string, (url: URL, args?: string[]) =>  any>} */
+/** @type {Record<string, (url: URL, args?: string[]) =>  any>} */
 const DEFAULT_LAUNCHERS = {
   chrome: (url, args = ['--no-sandbox', '--headless']) =>
     webdriverLauncher({
@@ -65,10 +65,10 @@ export async function launch() {
 }
 
 /**
-  * @param {string} browserName
-  * @param {import('../types').Config} config
-  * @param {string} urlString
-  */
+ * @param {string} browserName
+ * @param {import('../types').Config} config
+ * @param {string} urlString
+ */
 async function launchBrowser(browserName, config, urlString) {
   let { browsers } = config;
   let browserConfig = browsers[browserName];
@@ -78,8 +78,14 @@ async function launchBrowser(browserName, config, urlString) {
 
   let url = new URL(urlString);
 
-  assert(browserConfig, `config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `);
-  assert(defaultConfig, `defalt config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `);
+  assert(
+    browserConfig,
+    `config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `
+  );
+  assert(
+    defaultConfig,
+    `defalt config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `
+  );
 
   let launcher = defaultConfig(url, browserConfig.args);
 

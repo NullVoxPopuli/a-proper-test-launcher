@@ -5,11 +5,6 @@
   "dependencies": {
     "a-proper-test-launcher": "workspace:*"
   },
-  "dependenciesMeta": {
-    "a-proper-test-launcher": {
-      "injected": true
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.21.8",
     "@babel/eslint-parser": "^7.21.8",

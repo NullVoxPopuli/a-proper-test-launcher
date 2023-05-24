@@ -4,5 +4,4 @@ declare namespace global {
       NODE_ENV: 'development' | 'production';
     };
   }
-
 }

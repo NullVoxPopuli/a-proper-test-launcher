@@ -14,5 +14,6 @@
     // we import it, and in node, we don't do anything with import.meta
     "types": ["vite/client"]
   },
-  "include": ["src/**/*", "unpublished-development-types/**/*"]
+  "include": ["src/**/*", "unpublished-development-types/**/*"],
+  "exclude": ["src/vite/templates/**/*"]
 }
