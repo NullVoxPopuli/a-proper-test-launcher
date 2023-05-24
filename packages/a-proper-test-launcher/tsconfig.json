@@ -1,0 +1,22 @@
+{
+  "extends": "@tsconfig/strictest/tsconfig",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    // some eslint plugins don't support multi-extends
+    "module": "es2022",
+    "verbatimModuleSyntax": true,
+
+    // JSDoc -> Types
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist",
+
+    // This is a lie because 
+    // Because not all files in this project are browser files.
+    // However, when using vite in node land,
+    // we import it, and in node, we don't do anything with import.meta
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*", "unpublished-development-types/**/*"],
+  "exclude": ["src/vite/templates/**/*"]
+}

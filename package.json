@@ -1,0 +1,35 @@
+{
+  "name": "monorepo-root",
+  "version": "0.0.0",
+  "repository": "git@github.com:NullVoxPopuli/a-proper-test-launcher.git",
+  "author": "NullVoxPopuli",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "node ./dev/index.js",
+    "release": "changeset publish",
+    "test": "turbo run test --output-logs errors-only",
+    "lint:fix": "turbo run _:lint:fix --output-logs errors-only",
+    "lint": "turbo run _:lint --output-logs errors-only"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1",
+    "concurrently": "^8.0.1",
+    "dev-tools": "workspace:*",
+    "turbo": "1.9.9"
+  },
+  "engines": {
+    "node": ">= 18.*",
+    "yarn": "use pnpm",
+    "npm": "use pnpm"
+  },
+  "volta": {
+    "node": "18.16.0",
+    "pnpm": "8.4.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@changesets/assemble-release-plan@5.2.3": "patches/@changesets__assemble-release-plan@5.2.3.patch"
+    }
+  }
+}

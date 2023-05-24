@@ -1,0 +1,6 @@
+
+> dev-tools@ lint:js /home/nullvoxpopuli/Development/NullVoxPopuli/a-proper-test-launcher/dev
+> pnpm -w exec lint js
+
+dev-tools :: within dev
+ ELIFECYCLE  Command failed.

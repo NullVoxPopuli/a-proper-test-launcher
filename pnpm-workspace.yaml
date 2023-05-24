@@ -1,0 +1,7 @@
+packages:
+  # Just Internal
+  - "dev"
+  # Publishables
+  - "packages/*"
+  # Support
+  - "test-packages/*"
