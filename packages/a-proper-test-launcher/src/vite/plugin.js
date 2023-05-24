@@ -3,12 +3,22 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import url from 'node:url';
 
+import yn from 'yn';
+
+import { ENV_ENABLE, friendlyName } from '../shared.js';
 import { handleProgress } from './handle-progress.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
+ * This plugin will only setup tests when the `isEnabled` option is true.
+ * By default this is false, except when using the a-proper-test-launcher CLI tool.
+ *
+ * The a-proper-test-launcher CLI tool is used to launch browsers (and headlessly launch them)
+ * as well as determine which port `vite` is running on.
+ *
  * @typedef {object} Options;
+ * @property {boolean} [isEnabled]
  * @property {'qunit' | 'custom'} [ using ] test framework to use
  *
  * @param {Options} [ options ]
@@ -23,9 +33,16 @@ export function aProperTestLauncher(options = {}) {
 
   const cwd = process.cwd();
 
+  const isActive = options.isEnabled ?? yn(process.env[ENV_ENABLE]);
+
+  if (!isActive) {
+    return {
+      name: `[Disabled] ${friendlyName}`,
+    };
+  }
 
   return {
-    name: `A _proper_ test launcher`,
+    name: friendlyName,
     /**
      * Setup middleware for listening for progress
      */
@@ -33,7 +50,7 @@ export function aProperTestLauncher(options = {}) {
       // _server = server;
 
       /**
-       * Setup websock handler for receiving test progress
+       * Setup websocket handler for receiving test progress
        */
       handleProgress(server.ws);
     },
@@ -61,7 +78,6 @@ export function aProperTestLauncher(options = {}) {
             }
           }
         }
-
 
         return;
       }

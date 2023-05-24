@@ -1,7 +1,10 @@
 {
-  "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/esm/tsconfig"],
+  "extends": "@tsconfig/strictest/tsconfig",
   "compilerOptions": {
     "moduleResolution": "node",
+    // some eslint plugins don't support multi-extends
+    "module": "es2022",
+    "verbatimModuleSyntax": true,
 
     // JSDoc -> Types
     "declaration": true,

@@ -44,8 +44,13 @@ const CONFIG_NAME = 'a-proper-test-launcher.config';
 const MJS_EXT = ['.js', '.mjs'];
 const isCI = process.env['CI'];
 
-export async function launch() {
+/**
+ * @param {object} [ runtimeConfig ]
+ */
+export async function launch(runtimeConfig = {}) {
   let config = await getConfig();
+
+  config = Object.assign(config, runtimeConfig);
 
   if (isCI) {
     console.debug(`CI env var is present`);
