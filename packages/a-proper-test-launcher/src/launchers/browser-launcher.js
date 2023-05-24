@@ -43,7 +43,8 @@ export async function launch(runtimeConfig = {}) {
       function proxyToBuildHost(app) {
         app.use('/index.html', proxy(`localhost:${info.port}`)); 
       }
-    ]
+    ],
+    on_exit: server.close(),
   });
 
   if (isCI) {
