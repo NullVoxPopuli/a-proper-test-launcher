@@ -36,7 +36,6 @@ export function aProperTestLauncher(options = {}) {
   const cwd = process.cwd();
 
   const isActive = options.isEnabled ?? yn(process.env[ENV_ENABLE]);
-  const hasTestem = yn(process.env['VITE_CLI_REPORTER']);
 
   if (!isActive) {
     return {
@@ -57,30 +56,16 @@ export function aProperTestLauncher(options = {}) {
     },
 
     transformIndexHtml() {
-      let setup =
+      return [
         {
           tag: 'script',
-          // injectTo: 'head',
+          injectTo: 'head',
           attrs: {
             type: 'module',
             src: 'a-proper-test-launcher',
           },
-        };
-
-      let scripts = [setup];
-
-      if (hasTestem) {
-        scripts.push({
-          tag: 'script',
-          // injectTo: 'head',
-          attrs: {
-            type: 'module',
-            src: 'testem.js',
-          },
-        });
-      }
-
-      return scripts;
+        }
+      ];
     },
 
     resolveId(id) {
