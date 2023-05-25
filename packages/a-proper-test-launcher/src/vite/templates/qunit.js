@@ -4,6 +4,8 @@ import 'qunit/qunit/qunit.css';
 
 import QUnit from 'qunit/qunit/qunit.js';
 
+import { progress } from 'a-proper-test-launcher/browser';
+
 QUnit.config.autostart = false;
 
 const testFiles = await import.meta.glob('@root/tests/**/*-test.{js,ts,mjs,mts}');
@@ -66,6 +68,53 @@ document.body.append(qunitDiv, qunitFixtureDiv);
     };
   });
 })();
+
+// TODO: copy from testem/qunit_adapter.js
+
+QUnit.begin((data) => {
+  progress.report('start', {
+    suites: data.modules.length,
+    tests: data.totalTests,
+  });
+});
+QUnit.done((data) => {
+  progress.report('finish', {
+    duration: data.runtime,
+    passingAssertions: data.passed,
+    failingAssertions: data.failed,
+  });
+});
+QUnit.moduleStart((data) => {
+  progress.report('suite:start', {
+    suiteName: data.name,
+  });
+});
+QUnit.moduleDone((data) => {
+  progress.report('suite:finish', {
+    suiteName: data.name,
+    passingAssertions: data.passed,
+    failingAssertions: data.failed,
+    duration: data.runtime,
+  });
+});
+QUnit.testStart((data) => {
+  progress.report('test:start', {
+    suiteName: data.module,
+    name: data.name,
+  });
+});
+
+QUnit.testDone((data) => {
+  progress.report('test:finish', {
+    suiteName: data.module,
+    name: data.name,
+    duration: data.runtime,
+    isSkipped: data.skipped,
+    isTodo: data.todo,
+    passingAssertions: data.passed,
+    failingAssertions: data.failed,
+  });
+});
 
 // Do not start if CLI reporter is active
 // Testem, for example, will start qunit when testem is ready.

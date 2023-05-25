@@ -8,6 +8,7 @@ import resolvePackagePath from 'resolve-package-path';
 import yn from 'yn';
 
 import { ENV_ENABLE, friendlyName } from '../shared.js';
+import { handleProgress } from './handle-progress.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -49,12 +50,10 @@ export function aProperTestLauncher(options = {}) {
      * Setup middleware for listening for progress
      */
     async configureServer(server) {
-
-      if (hasTestem) {
-        return () => setupTestem(server);
-      }
-
-      return;
+      /**
+       * Setup websocket handler for receiving test progress
+       */
+      handleProgress(server.ws);
     },
 
     transformIndexHtml() {
@@ -85,10 +84,6 @@ export function aProperTestLauncher(options = {}) {
     },
 
     resolveId(id) {
-      if (id === '/testem.js') {
-        return `aptl:${id}`;
-      }
-
       if (id.startsWith('/a-proper-test-launcher')) {
         return `aptl:${id}`;
       }
@@ -100,23 +95,9 @@ export function aProperTestLauncher(options = {}) {
 
       return;
     },
-    async load(id) {
+    load(id) {
       if (id.startsWith('aptl:')) {
         let name = id.replace('aptl:', '');
-
-        if (name.startsWith('/testem')) {
-          let content = '';
-          let testemPath = getTestemDirectory();
-
-          content += await fs.readFile(path.join(testemPath, 'public/testem/decycle.js'));
-          content += await fs.readFile(path.join(testemPath, 'public/testem/jasmine2_adapter.js'));
-          content += await fs.readFile(path.join(testemPath, 'public/testem/jasmine_adapter.js'));
-          content += await fs.readFile(path.join(testemPath, 'public/testem/mocha_adapter.js'));
-          content += await fs.readFile(path.join(testemPath, 'public/testem/qunit_adapter.js'));
-          content += await fs.readFile(path.join(testemPath, 'public/testem/testem_client.js'));
-
-          return content;
-        }
 
         if (name.startsWith('/a-proper-test-launcher')) {
           switch (testFramework) {
@@ -140,59 +121,4 @@ function getTestemDirectory() {
   assert(testemManifestPath, 'Something went wrong resolving `testem`');
 
   return path.dirname(testemManifestPath);
-}
-
-function getSocketIODirectory() {
-  let socketManifestPath = resolvePackagePath('socket.io', getTestemDirectory());
-
-  assert(socketManifestPath, 'Something went wrong resolving `socket.io`');
-
-  return path.dirname(socketManifestPath);
-}
-
-/**
- *
- * @param {import('vite').ViteDevServer} server
- */
-function setupTestem(server) {
-  server.middlewares.use(async (req, res, next) => {
-    if (req.url === '/testem/connection.html') {
-      let realLocation = path.join(getTestemDirectory(), 'public/testem/connection.html');
-      let file = await fs.readFile(realLocation);
-
-      res.setHeader('Content-Type', 'text/html' + '; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
-      res.end(file, 'utf8');
-    }
-
-    // For refreshing when the build changes..
-    if (req.url === '/socket.io/socket.io.js') {
-      let realLocation = path.join(getSocketIODirectory(), 'client-dist/socket.io.js');
-      let file = await fs.readFile(realLocation);
-
-      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
-      res.end(file, 'utf8');
-    }
-
-    if (req.url === '/socket.io/socket.io.js.map') {
-      let realLocation = path.join(getSocketIODirectory(), 'client-dist/socket.io.js.map');
-      let file = await fs.readFile(realLocation);
-
-      res.setHeader('Content-Type', 'application/json' + '; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
-      res.end(file, 'utf8');
-    }
-
-    if (req.url === '/testem/testem_connection.js') {
-      let realLocation = path.join(getTestemDirectory(), 'public/testem/testem_connection.js');
-      let file = await fs.readFile(realLocation);
-
-      res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
-      res.end(file, 'utf8');
-    }
-
-    next();
-  });
 }
