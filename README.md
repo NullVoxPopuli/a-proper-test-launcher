@@ -147,6 +147,7 @@ Most test frameworks' tests early-exit on any failure. This gives you an incompl
 
 With QUnit, you can get the whole overview of a test, see that later assertions pass after a failure -- allowing for much quicker and tighter developer feedback loop.
 
+
 ### Why not `@playwright/test`?
 
 `@playwright/test` a _test launcher_[^test_launcher], which is designed for end-to-end tests which run in a node environment.
@@ -159,6 +160,11 @@ Puppeteer is a _browser driver_[^browser_driver] and only launches Chrome / Chro
 
 Vitest originally only supported running tests in node.
 They later added the ability to run tests in the browser, but only with their test framework.
+
+### Why not use testem?
+
+Testem, like the other test runners, wants to serve the tests.
+It also doesn't allow access to configuration of the socket.io connection it wants to establish between browser session and cli-server.
 
 
 [^test_launcher]: existing versions of these tools will want to know what test files you have, and generally also include their own build. Tools that connect to an existing server that has tests and allows them to run would be considered a "test launcher", but "test launcher" is so tied to node-testing, that the phrase isn't very useful to us.

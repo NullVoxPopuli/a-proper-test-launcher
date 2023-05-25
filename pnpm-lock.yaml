@@ -4,6 +4,9 @@ patchedDependencies:
   '@changesets/assemble-release-plan@5.2.3':
     hash: oi6v6io33uxvojef6ezqzay4oy
     path: patches/@changesets__assemble-release-plan@5.2.3.patch
+  testem@3.10.1:
+    hash: cukdyp5grxsdpuv56ohvvmrdvq
+    path: patches/testem@3.10.1.patch
 
 importers:
 
@@ -81,7 +84,7 @@ importers:
         version: 4.0.3
       testem:
         specifier: ^3.10.1
-        version: 3.10.1
+        version: 3.10.1(patch_hash=cukdyp5grxsdpuv56ohvvmrdvq)
       yn:
         specifier: ^5.0.0
         version: 5.0.0
@@ -8822,7 +8825,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /testem@3.10.1:
+  /testem@3.10.1(patch_hash=cukdyp5grxsdpuv56ohvvmrdvq):
     resolution: {integrity: sha512-42c4e7qlAelwMd8O3ogtVGRbgbr6fJnX6H51ACOIG1V1IjsKPlcQtxPyOwaL4iikH22Dfh+EyIuJnMG4yxieBQ==}
     engines: {node: '>= 7.*'}
     hasBin: true
@@ -8914,6 +8917,7 @@ packages:
       - walrus
       - whiskers
     dev: false
+    patched: true
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}

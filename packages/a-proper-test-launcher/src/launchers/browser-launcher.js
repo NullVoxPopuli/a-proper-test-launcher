@@ -8,9 +8,7 @@ import fse from 'fs-extra';
 import Testem from 'testem';
 import { createServer } from 'vite';
 
-/**
- * @typedef {import('@web/test-runner-core').BrowserLauncher} BrowserLauncher
- */
+import { ENV_ENABLE } from '../shared.js';
 
 const CWD = process.cwd();
 const MJS_EXT = ['.js', '.mjs'];
@@ -20,37 +18,62 @@ const isCI = process.env['CI'];
  * 1. Start Vite with the proxy to Testem enabled
  * 2. Start Testem with a known port that vite will proxy to
  *
+  * @typedef {object} Options
+ * @property {boolean} [ serve ] -- testem, but in server mode
+ * @property {boolean} [ dev ] -- vite only
  *
- * @param {object} [ runtimeConfig ]
+ * @param {Options} [ runtimeConfig ]
  */
 export async function launch(runtimeConfig = {}) {
-  let testem = new Testem();
+  let { dev, serve } = runtimeConfig;
+
+  process.env[ENV_ENABLE] = 'true';
+
+  
+  if (dev) {
+    let server = await createServer({ root: CWD, clearScreen: false, open: false });
+    let running = await server.listen();
+
+    running.httpServer?.address();
+
+    running.printUrls();
+
+    return;
+  }
+
+  process.env['VITE_CLI_REPORTER'] = 'true';
 
   let server = await createServer({ root: CWD, clearScreen: false, open: false });
   let running = await server.listen();
   let info = running.httpServer?.address();
+  let testReporterPort = (info?.port ?? 7000) + 1;
 
-  running.printUrls();
+  server.middlewares.use((req, res, next) => {
+    console.log(req.url); 
+    next();
+  });
+
+  let testem = new Testem();
 
   // https://github.com/testem/testem/blob/master/lib/api.js#L10
   testem.setDefaultOptions({
     config_dir: CWD,
     fail_on_zero_tests: true,
-    test_page: `index.html`,
     // https://github.com/testem/testem/blob/master/lib/server/index.js#L214
-    proxies: {},
-    middleware: [
-      function proxyToBuildHost(app) {
-        app.use('/index.html', proxy(`localhost:${info.port}`)); 
-      }
-    ],
-    on_exit: server.close(),
+    // proxies: [`localhost:${info.port}`],
+    // on_exit: () => server.close(),
   });
 
-  if (isCI) {
+  let isHeadless = isCI || !runtimeConfig.serve; 
+
+  console.log({ isHeadless });
+
+  if (isHeadless) {
     return new Promise((resolve, reject) => {
+      // https://github.com/testem/testem/blob/master/lib/api.js#L10
       testem.startCI(
         {
+          url: `http://localhost:${testReporterPort}`,
           file: path.join(CWD, 'testem.cjs'),
         },
         /**
@@ -69,6 +92,6 @@ export async function launch(runtimeConfig = {}) {
       );
     });
   } else {
-    testem.startServer();
+    testem.startDev();
   }
 }

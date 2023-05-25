@@ -67,4 +67,10 @@ document.body.append(qunitDiv, qunitFixtureDiv);
   });
 })();
 
-QUnit.start();
+// Do not start if CLI reporter is active
+// Testem, for example, will start qunit when testem is ready.
+if (!import.meta.env.VITE_CLI_REPORTER) {
+  QUnit.start();
+} else {
+  console.info(`CLI-runner detected, waiting for instructions`);
+}

@@ -9,7 +9,7 @@ module.exports = {
   disable_watching: true,
   launch_in_ci: [BROWSER],
   launch_in_dev: [BROWSER],
-  browser_start_timeout: 30,
+  browser_start_timeout: 300,
   browser_args: {
     Firefox: {
       mode: 'ci',
@@ -20,11 +20,14 @@ module.exports = {
       ci: [
         // --no-sandbox is needed when running Chrome inside a container
         process.env.CI ? '--no-sandbox' : null,
-        '--headless',
+        '--headless=new',
+        '--remote-allow-origins=*',
+        '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-software-rasterizer',
         '--mute-audio',
         '--remote-debugging-port=0',
+        '--disable-features=DefaultPassthroughCommandDecoder',
         '--window-size=1440,900',
       ].filter(Boolean),
     },

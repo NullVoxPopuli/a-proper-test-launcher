@@ -35,6 +35,7 @@ export function aProperTestLauncher(options = {}) {
   const cwd = process.cwd();
 
   const isActive = options.isEnabled ?? yn(process.env[ENV_ENABLE]);
+  const hasTestem = yn(process.env['VITE_CLI_REPORTER']);
 
   if (!isActive) {
     return {
@@ -48,27 +49,39 @@ export function aProperTestLauncher(options = {}) {
      * Setup middleware for listening for progress
      */
     async configureServer(server) {
-      return () => setupTestem(server);
+
+      if (hasTestem) {
+        return () => setupTestem(server);
+      }
+
+      return;
     },
 
     transformIndexHtml() {
-      return [
+      let setup =
         {
           tag: 'script',
-          injectTo: 'head',
+          // injectTo: 'head',
           attrs: {
             type: 'module',
             src: 'a-proper-test-launcher',
           },
-        },
-        {
+        };
+
+      let scripts = [setup];
+
+      if (hasTestem) {
+        scripts.push({
           tag: 'script',
-          injectTo: 'head',
+          // injectTo: 'head',
           attrs: {
+            type: 'module',
             src: 'testem.js',
           },
-        },
-      ];
+        });
+      }
+
+      return scripts;
     },
 
     resolveId(id) {
@@ -158,6 +171,15 @@ function setupTestem(server) {
       let file = await fs.readFile(realLocation);
 
       res.setHeader('Content-Type', 'text/javascript' + '; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
+      res.end(file, 'utf8');
+    }
+
+    if (req.url === '/socket.io/socket.io.js.map') {
+      let realLocation = path.join(getSocketIODirectory(), 'client-dist/socket.io.js.map');
+      let file = await fs.readFile(realLocation);
+
+      res.setHeader('Content-Type', 'application/json' + '; charset=utf-8');
       res.setHeader('Content-Length', Buffer.byteLength(file, 'utf8'));
       res.end(file, 'utf8');
     }
