@@ -5,32 +5,39 @@
  * @typedef {Parameters<WebSocketServer['on']>[1]} Handler
  */
 
+import tap from 'tap';
+
 import { NAME } from '../shared.js';
 
 // TODO: use a TAP Reporter
 // TODO: use testem's TAP Reporter
+// More immediat todo -- def don't re-implement this
 
 /**
  * @param {WebSocketServer} ws
  */
 export function handleProgress(ws) {
   on(ws, 'start', (data) => {
-    console.debug('TODO', data);
+    // console.debug('TODO', data);
   });
   on(ws, 'finish', (data) => {
-    console.debug('TODO', data);
+    // console.debug('TODO', data);
   });
   on(ws, 'suite:start', (data) => {
-    console.debug('TODO', data);
+    // console.debug('TODO', data);
   });
   on(ws, 'suite:finish', (data) => {
-    console.debug('TODO', data);
+    // console.debug('TODO', data);
   });
   on(ws, 'test:start', (data) => {
-    console.debug('TODO', data);
+    // console.debug('TODO', data);
   });
   on(ws, 'test:finish', (data) => {
-    console.debug('TODO', data);
+    if (data.failingAssertions === 0 && data.passingAssertions === 0) {
+      tap.pass(true, data.name);
+    } else {
+      tap.fail(false, data.name);
+    }
   });
 }
 

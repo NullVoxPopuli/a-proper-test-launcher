@@ -3,9 +3,9 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
-import proxy from 'express-http-proxy';
+// import proxy from 'express-http-proxy';
 import fse from 'fs-extra';
-import Testem from 'testem';
+// import Testem from 'testem';
 import { createServer } from 'vite';
 
 import { ENV_ENABLE } from '../shared.js';
@@ -65,8 +65,6 @@ export async function launch(runtimeConfig = {}) {
   });
 
   let isHeadless = isCI || !runtimeConfig.serve; 
-
-  console.log({ isHeadless });
 
   if (isHeadless) {
     return new Promise((resolve, reject) => {
