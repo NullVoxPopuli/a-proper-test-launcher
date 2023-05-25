@@ -28,10 +28,8 @@
     "a-proper-test-launcher": "./src/bin/-bin-launch.js"
   },
   "dependencies": {
-    "express-http-proxy": "^1.6.3",
     "fs-extra": "^11.1.1",
     "resolve-package-path": "^4.0.3",
-    "testem": "^3.10.1",
     "yn": "^5.0.0"
   },
   "devDependencies": {

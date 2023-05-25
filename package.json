@@ -29,8 +29,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@changesets/assemble-release-plan@5.2.3": "patches/@changesets__assemble-release-plan@5.2.3.patch",
-      "testem@3.10.1": "patches/testem@3.10.1.patch"
+      "@changesets/assemble-release-plan@5.2.3": "patches/@changesets__assemble-release-plan@5.2.3.patch"
     }
   }
 }
