@@ -5,7 +5,7 @@ import path from 'node:path';
 
 // import proxy from 'express-http-proxy';
 import fse from 'fs-extra';
-// import Testem from 'testem';
+import Testem from 'testem';
 import { createServer } from 'vite';
 
 import { ENV_ENABLE } from '../shared.js';
@@ -18,7 +18,7 @@ const isCI = process.env['CI'];
  * 1. Start Vite with the proxy to Testem enabled
  * 2. Start Testem with a known port that vite will proxy to
  *
-  * @typedef {object} Options
+ * @typedef {object} Options
  * @property {boolean} [ serve ] -- testem, but in server mode
  * @property {boolean} [ dev ] -- vite only
  *
@@ -29,7 +29,6 @@ export async function launch(runtimeConfig = {}) {
 
   process.env[ENV_ENABLE] = 'true';
 
-  
   if (dev) {
     let server = await createServer({ root: CWD, clearScreen: false, open: false });
     let running = await server.listen();
@@ -44,14 +43,23 @@ export async function launch(runtimeConfig = {}) {
   process.env['VITE_CLI_REPORTER'] = 'true';
 
   let server = await createServer({ root: CWD, clearScreen: false, open: false });
-  let running = await server.listen();
-  let info = running.httpServer?.address();
-  let testReporterPort = (info?.port ?? 7000) + 1;
+  await server.listen();
 
   server.middlewares.use((req, res, next) => {
-    console.log(req.url); 
+    console.log(req.url);
     next();
   });
+
+
+  assert(server.httpServer, `Failed to start Vite HTTP server`);
+
+  let addressInfo = server.httpServer.address();
+
+  assert(addressInfo, `Failed to determine host & port the Vite http server started on`);
+
+  server.printUrls();
+
+  let { address, port } = addressInfo;
 
   let testem = new Testem();
 
@@ -64,14 +72,14 @@ export async function launch(runtimeConfig = {}) {
     // on_exit: () => server.close(),
   });
 
-  let isHeadless = isCI || !runtimeConfig.serve; 
+  let isHeadless = isCI || !runtimeConfig.serve;
 
   if (isHeadless) {
     return new Promise((resolve, reject) => {
       // https://github.com/testem/testem/blob/master/lib/api.js#L10
       testem.startCI(
         {
-          url: `http://localhost:${testReporterPort}`,
+          url: `http://${address}:${port}`,
           file: path.join(CWD, 'testem.cjs'),
         },
         /**
@@ -90,6 +98,9 @@ export async function launch(runtimeConfig = {}) {
       );
     });
   } else {
-    testem.startDev();
+    testem.startDev({
+      url: `http://${address}:${port}`,
+      file: path.join(CWD, 'testem.cjs'),
+    });
   }
 }

@@ -3,12 +3,12 @@ import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import url from 'node:url';
+import util from 'node:util';
 
 import resolvePackagePath from 'resolve-package-path';
 import yn from 'yn';
 
 import { ENV_ENABLE, friendlyName } from '../shared.js';
-import { handleProgress } from './handle-progress.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -52,7 +52,7 @@ export function aProperTestLauncher(options = {}) {
       /**
        * Setup websocket handler for receiving test progress
        */
-      handleProgress(server.ws);
+      // console.log(util.inspect(server, { depth: 2, colors: true }));
     },
 
     transformIndexHtml() {
@@ -64,7 +64,7 @@ export function aProperTestLauncher(options = {}) {
             type: 'module',
             src: 'a-proper-test-launcher',
           },
-        }
+        },
       ];
     },
 
