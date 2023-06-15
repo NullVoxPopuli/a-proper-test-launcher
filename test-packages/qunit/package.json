@@ -19,11 +19,14 @@
     "qunit": "^2.19.4",
     "qunit-dom": "^2.0.0",
     "typescript": "^5.0.4",
-    "vite": "^4.3.8"
+    "vite": "^4.3.9"
   },
   "scripts": {
     "test": "a-proper-test-launcher",
+    "test:chrome": "BROWSER=Chrome pnpm test",
+    "test:firefox": "BROWSER=Firefox pnpm test",
     "dev:tests": "a-proper-test-launcher dev",
+    "serve:tests": "a-proper-test-launcher serve",
     "lint": "pnpm -w exec lint",
     "lint:fix": "pnpm -w exec lint fix",
     "lint:js": "pnpm -w exec lint js",

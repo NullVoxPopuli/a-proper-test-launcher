@@ -1,12 +1,14 @@
 // @ts-check
+import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import url from 'node:url';
+import util from 'node:util';
 
+import resolvePackagePath from 'resolve-package-path';
 import yn from 'yn';
 
 import { ENV_ENABLE, friendlyName } from '../shared.js';
-import { handleProgress } from './handle-progress.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -47,12 +49,23 @@ export function aProperTestLauncher(options = {}) {
      * Setup middleware for listening for progress
      */
     async configureServer(server) {
-      // _server = server;
-
       /**
        * Setup websocket handler for receiving test progress
        */
-      handleProgress(server.ws);
+      // console.log(util.inspect(server, { depth: 2, colors: true }));
+    },
+
+    transformIndexHtml() {
+      return [
+        {
+          tag: 'script',
+          injectTo: 'head',
+          attrs: {
+            type: 'module',
+            src: 'a-proper-test-launcher',
+          },
+        },
+      ];
     },
 
     resolveId(id) {
@@ -85,4 +98,12 @@ export function aProperTestLauncher(options = {}) {
       return;
     },
   };
+}
+
+function getTestemDirectory() {
+  let testemManifestPath = resolvePackagePath('testem', __dirname);
+
+  assert(testemManifestPath, 'Something went wrong resolving `testem`');
+
+  return path.dirname(testemManifestPath);
 }

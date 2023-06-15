@@ -3,123 +3,104 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
-import { webdriverLauncher } from '@web/test-runner-webdriver';
+// import proxy from 'express-http-proxy';
 import fse from 'fs-extra';
+import Testem from 'testem';
+import { createServer } from 'vite';
 
-/**
- * @typedef {import('@web/test-runner-core').BrowserLauncher} BrowserLauncher
- */
-
-/** @type {Record<string, (url: URL, args?: string[]) =>  any>} */
-const DEFAULT_LAUNCHERS = {
-  chrome: (url, args = ['--no-sandbox', '--headless']) =>
-    webdriverLauncher({
-      automationProtocol: 'webdriver',
-      port: parseInt(url.port, 10),
-      path: url.pathname,
-      capabilities: {
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: [...args],
-        },
-      },
-    }),
-
-  firefox: (url, args = ['-headless']) =>
-    webdriverLauncher({
-      automationProtocol: 'webdriver',
-      port: parseInt(url.port, 10),
-      path: url.pathname,
-      capabilities: {
-        browserName: 'firefox',
-        'moz:firefoxOptions': {
-          args: [...args],
-        },
-      },
-    }),
-};
+import { ENV_ENABLE } from '../shared.js';
 
 const CWD = process.cwd();
-const CONFIG_NAME = 'a-proper-test-launcher.config';
 const MJS_EXT = ['.js', '.mjs'];
 const isCI = process.env['CI'];
 
 /**
- * @param {object} [ runtimeConfig ]
+ * 1. Start Vite with the proxy to Testem enabled
+ * 2. Start Testem with a known port that vite will proxy to
+ *
+ * @typedef {object} Options
+ * @property {boolean} [ serve ] -- testem, but in server mode
+ * @property {boolean} [ dev ] -- vite only
+ *
+ * @param {Options} [ runtimeConfig ]
  */
 export async function launch(runtimeConfig = {}) {
-  let config = await getConfig();
+  let { dev, serve } = runtimeConfig;
 
-  config = Object.assign(config, runtimeConfig);
+  process.env[ENV_ENABLE] = 'true';
 
-  if (isCI) {
-    console.debug(`CI env var is present`);
+  if (dev) {
+    let server = await createServer({ root: CWD, clearScreen: false, open: false });
+    let running = await server.listen();
+
+    running.httpServer?.address();
+
+    running.printUrls();
+
+    return;
+  }
+
+  process.env['VITE_CLI_REPORTER'] = 'true';
+
+  let server = await createServer({ root: CWD, clearScreen: false, open: false });
+  await server.listen();
+
+  server.middlewares.use((req, res, next) => {
+    console.log(req.url);
+    next();
+  });
+
+
+  assert(server.httpServer, `Failed to start Vite HTTP server`);
+
+  let addressInfo = server.httpServer.address();
+
+  assert(addressInfo, `Failed to determine host & port the Vite http server started on`);
+
+  server.printUrls();
+
+  let { address, port } = addressInfo;
+
+  let testem = new Testem();
+
+  // https://github.com/testem/testem/blob/master/lib/api.js#L10
+  testem.setDefaultOptions({
+    config_dir: CWD,
+    fail_on_zero_tests: true,
+    // https://github.com/testem/testem/blob/master/lib/server/index.js#L214
+    // proxies: [`localhost:${info.port}`],
+    // on_exit: () => server.close(),
+  });
+
+  let isHeadless = isCI || !runtimeConfig.serve;
+
+  if (isHeadless) {
+    return new Promise((resolve, reject) => {
+      // https://github.com/testem/testem/blob/master/lib/api.js#L10
+      testem.startCI(
+        {
+          url: `http://${address}:${port}`,
+          file: path.join(CWD, 'testem.cjs'),
+        },
+        /**
+         * @param {number} exitCode
+         * @param {string} error
+         */
+        (exitCode, error) => {
+          if (error) {
+            reject(error);
+          } else if (exitCode !== 0) {
+            reject('Testem finished with non-zero exit code. Tests failed.');
+          } else {
+            resolve(exitCode);
+          }
+        }
+      );
+    });
   } else {
-    console.debug(`CI env var is not present -- presuming dev mode`);
+    testem.startDev({
+      url: `http://${address}:${port}`,
+      file: path.join(CWD, 'testem.cjs'),
+    });
   }
-
-  if (!isCI) {
-    let { devBrowser } = config;
-
-    let { url } = await config.launch();
-
-    // await new Promise(resolve => setTimeout(resolve, 50_000));
-
-    return await launchBrowser(devBrowser, config, url);
-  }
-}
-
-/**
- * @param {string} browserName
- * @param {import('../types').Config} config
- * @param {string} urlString
- */
-async function launchBrowser(browserName, config, urlString) {
-  let { browsers } = config;
-  let browserConfig = browsers[browserName];
-  let defaultConfig = DEFAULT_LAUNCHERS[browserName];
-
-  console.debug(urlString);
-
-  let url = new URL(urlString);
-
-  assert(
-    browserConfig,
-    `config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `
-  );
-  assert(
-    defaultConfig,
-    `defalt config for browser, ${browserName}, was not found. Available: ${Object.keys(browsers)} `
-  );
-
-  let launcher = defaultConfig(url, browserConfig.args);
-
-  await launcher.initialize({});
-  await launcher.startSession(1, urlString);
-
-  process.on('exit', () => launcher.stop());
-}
-
-async function getConfig() {
-  let existingPath;
-
-  for (let ext of MJS_EXT) {
-    let configPath = path.join(CWD, CONFIG_NAME + ext);
-    let doesExist = await fse.pathExists(configPath);
-
-    if (doesExist) {
-      existingPath = configPath;
-
-      break;
-    }
-  }
-
-  assert(
-    existingPath,
-    `Could not find config file. Expected either ${CONFIG_NAME}.js or ${CONFIG_NAME}.mjs in the ${CWD} directory. Note that this file must be a module.`
-  );
-
-  let configModule = await import(existingPath);
-
-  return configModule.default;
 }

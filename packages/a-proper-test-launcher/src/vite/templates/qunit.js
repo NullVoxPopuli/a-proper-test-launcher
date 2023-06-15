@@ -69,6 +69,8 @@ document.body.append(qunitDiv, qunitFixtureDiv);
   });
 })();
 
+// TODO: copy from testem/qunit_adapter.js
+
 QUnit.begin((data) => {
   progress.report('start', {
     suites: data.modules.length,
@@ -114,4 +116,10 @@ QUnit.testDone((data) => {
   });
 });
 
-QUnit.start();
+// Do not start if CLI reporter is active
+// Testem, for example, will start qunit when testem is ready.
+if (!import.meta.env.VITE_CLI_REPORTER) {
+  QUnit.start();
+} else {
+  console.info(`CLI-runner detected, waiting for instructions`);
+}
